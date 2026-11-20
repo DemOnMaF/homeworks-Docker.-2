@@ -14,7 +14,9 @@
 </details>
 
 **Правила выполнения заданий к занятию «6.4. Docker. Часть 2»**
+
 <details>
+  
 - Все задания выполняйте на основе [конфигов](https://github.com/netology-code/sdvps-homeworks/tree/main/lecture_demos/6-04) из лекции. 
 - В заданиях описаны те параметры, которые необходимо изменить. 
 - Если параметр не упомянут вообще, значит, его нужно оставить таким, какой он был в лекции. 
@@ -23,16 +25,26 @@
 - Выполнив все задания без звёздочки, вы должны получить полнофункциональный сервис.
 
 Любые вопросы по решению задач задавайте в разделе "Вопросы по заданию".
+
 </details>
 
 ### Дополнительные примеры
-Примеры различных композ проектов от разработчиков Docker: [https://github.com/docker/awesome-compose/blob/master/wireguard/compose.yaml](https://github.com/docker/awesome-compose/tree/master)
+
 <details>
+
+Примеры различных композ проектов от разработчиков Docker: [https://github.com/docker/awesome-compose/blob/master/wireguard/compose.yaml](https://github.com/docker/awesome-compose/tree/master)
+
+</details>
+
 ### Дополнительная документация:
+
+<details>
+
   - [блок networks: в compose](https://docs.docker.com/compose/compose-file/06-networks/)
   - [блок volumes: в compose](https://docs.docker.com/compose/compose-file/07-volumes/)
 
 </details>
+
 ---
 
 ### Задание 1
