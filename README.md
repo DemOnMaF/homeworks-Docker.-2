@@ -53,6 +53,15 @@
 
 Установите Docker Compose и опишите, для чего он нужен и как может улучшить лично вашу жизнь.
 
+
+<details>
+
+<summary>Ответ</summary>
+
+Docker Compose — это инструмент для определения и запуска многоконтейнерных приложений Docker с помощью одного YAML-файла. Он позволяет описать все сервисы (Prometheus, Grafana, Pushgateway), их сети, тома и зависимости в декларативном виде, а затем управлять ими одной командой (docker compose up -d). Лично для меня это упрощает развёртывание стека мониторинга: не нужно вручную создавать сеть, запускать каждый контейнер с десятком флагов и следить за порядком — Compose делает это автоматически и воспроизводимо.
+
+</details>
+
 ---
 
 ### Задание 2 
@@ -70,6 +79,31 @@
 Ваша подсеть должна называться: <ваши фамилия и инициалы>-my-netology-hw.
 Все приложения из последующих заданий должны находиться в этой конфигурации.
 
+<details>
+
+<summary>Ответ</summary>
+
+```yaml
+version: '3.8'
+
+services:
+
+volumes:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  my-netology-hw:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.0.0/16
+    name: FedorovDN-my-netology-hw
+
+```
+
+</details>
+
 ---
 
 ### Задание 3 
@@ -80,6 +114,42 @@
 2. Добавьте необходимые тома с данными и конфигурацией (конфигурация лежит в репозитории в директории [6-04/prometheus](https://github.com/netology-code/sdvps-homeworks/tree/main/lecture_demos/6-04/prometheus) ).
 3. Обеспечьте внешний доступ к порту 9090 c докер-сервера.
 
+
+<details>
+
+<summary>Ответ</summary>
+
+```yaml
+version: '3.8'
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: FedorovDN-netology-prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - my-netology-hw
+
+volumes:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  my-netology-hw:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.0.0/16
+    name: FedorovDN-my-netology-hw
+
+```
+
+</details>
+
 ---
 
 ### Задание 4 
@@ -88,6 +158,51 @@
 
 1. Создайте конфигурацию docker-compose для Pushgateway с именем контейнера <ваши фамилия и инициалы>-netology-pushgateway. 
 2. Обеспечьте внешний доступ к порту 9091 c докер-сервера.
+
+
+<details>
+
+<summary>Ответ</summary>
+
+```yaml
+version: '3.8'
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: FedorovDN-netology-prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - my-netology-hw
+
+  pushgateway:
+    image: prom/pushgateway:latest
+    container_name: FedorovDN-netology-pushgateway
+    ports:
+      - "9091:9091"
+    networks:
+      - my-netology-hw
+
+volumes:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  my-netology-hw:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.0.0/16
+    name: FedorovDN-my-netology-hw
+
+```
+
+
+</details>
 
 ---
 
@@ -100,6 +215,63 @@
 3. Добавьте переменную окружения с путем до файла с кастомными настройками (должен быть в томе), в самом файле пропишите логин=<ваши фамилия и инициалы> пароль=netology.
 4. Обеспечьте внешний доступ к порту 3000 c порта 80 докер-сервера.
 
+
+<details>
+
+<summary>Ответ</summary>
+
+```yaml
+version: '3.8'
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: FedorovDN-netology-prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - my-netology-hw
+
+  pushgateway:
+    image: prom/pushgateway:latest
+    container_name: FedorovDN-netology-pushgateway
+    ports:
+      - "9091:9091"
+    networks:
+      - my-netology-hw
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: FedorovDN-netology-grafana
+    volumes:
+      - ./grafana/custom.ini:/etc/grafana/grafana.ini:ro
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_PATHS_CONFIG=/etc/grafana/grafana.ini
+    ports:
+      - "80:3000"
+    networks:
+      - my-netology-hw
+
+volumes:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  my-netology-hw:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.0.0/16
+    name: FedorovDN-my-netology-hw
+
+```
+
+</details>
+
 ---
 
 ### Задание 6 
@@ -110,6 +282,73 @@
 2. Настройте режимы перезапуска для контейнеров.
 3. Настройте использование контейнерами одной сети.
 5. Запустите сценарий в detached режиме.
+
+
+<details>
+
+<summary>Ответ</summary>
+
+```yaml
+name: docker2
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: FedorovDN-netology-prometheus
+    restart: unless-stopped
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - my-netology-hw
+    depends_on:
+      - pushgateway
+
+  pushgateway:
+    image: prom/pushgateway:latest
+    container_name: FedorovDN-netology-pushgateway
+    restart: unless-stopped
+    ports:
+      - "9091:9091"
+    networks:
+      - my-netology-hw
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: FedorovDN-netology-grafana
+    restart: unless-stopped
+    volumes:
+      - ./grafana/custom.ini:/etc/grafana/grafana.ini:ro
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_PATHS_CONFIG=/etc/grafana/grafana.ini
+    ports:
+      - "80:3000"
+    networks:
+      - my-netology-hw
+    depends_on:
+      - prometheus
+
+volumes:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  my-netology-hw:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.0.0/16
+    name: FedorovDN-my-netology-hw
+  
+```
+
+![image](img/06.png)
+
+
+</details>
 
 ---
 
@@ -127,6 +366,18 @@
 * скриншот команды docker ps после запуске docker-compose.yml;
 * скриншот графика, построенного на основе вашей метрики.
 
+
+<details>
+  
+  
+<summary>Ответ</summary>
+
+![image](img/07.01.png)
+
+![image](img/07.02.png)
+
+</details>
+
 ---
 
 ### Задание 8
@@ -136,6 +387,15 @@
 1. Остановите и удалите все контейнеры одной командой.
 
 В качестве решения приложите скриншот консоли с проделанными действиями.
+
+
+<details>
+  
+<summary>Ответ</summary>
+
+![image](img/08.png)
+
+</details>
 
 ---
 
