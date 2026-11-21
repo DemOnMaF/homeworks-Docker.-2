@@ -289,7 +289,7 @@ networks:
 <summary>Ответ</summary>
 
 ```yaml
-name: docker2
+name: FedorovDN-monitoring
 
 services:
   prometheus:
